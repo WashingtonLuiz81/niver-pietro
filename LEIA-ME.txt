@@ -1,0 +1,9 @@
+INSTRUÇÕES PARA A SURPRESA DO PIETRO
+
+1. Coloque as fotos na pasta: assets/img/
+2. Coloque o áudio (musica.mp3) na pasta: assets/audio/
+3. Configure os nomes das fotos e a letra da música no arquivo: script.js
+4. Abra o index.html no navegador e divirta-se!
+
+Parabéns Pietro!
+By: Antigravity AI

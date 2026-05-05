@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missão Pietro: 4 Anos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Tela de Entrada -->
+        <section id="entry-screen" class="active">
+            <div class="overlay"></div>
+            <div class="content">
+                <h2 class="subtitle">ESTAMOS PRONTOS?</h2>
+                <h1 class="title">MISSÃO PIETRO: 4 ANOS</h1>
+                <div class="arc-reactor-container">
+                    <button id="start-btn" class="arc-reactor">
+                        <span>INICIAR</span>
+                    </button>
+                </div>
+                <p class="hint">Toque para começar a surpresa</p>
+            </div>
+        </section>
+
+        <!-- Tela do Show -->
+        <section id="show-screen">
+            <div id="photo-container">
+                <!-- Fotos serão inseridas via JS -->
+            </div>
+            
+            <div class="lyrics-overlay">
+                <div id="lyrics-content">
+                    <p class="current-lyric"></p>
+                </div>
+            </div>
+
+            <div class="particles"></div>
+            
+            <div class="hud-top">
+                <span class="hud-text">ALVO: PIETRO</span>
+                <span class="hud-text">IDADE: 04</span>
+            </div>
+            
+            <div class="hud-bottom">
+                <span class="hud-text">STATUS: ANIVERSÁRIO</span>
+                <span class="hud-text">CARREGANDO EMOÇÕES... 100%</span>
+            </div>
+    </div>
+
+    <!-- Tela Final (Fora do #app para máxima compatibilidade) -->
+    <section id="final-screen">
+        <img src="assets/img/finale.png" id="finale-img" alt="Feliz Aniversário">
+        <div class="finale-content">
+            <div class="celebration-particles"></div>
+        </div>
+    </section>
+
+    <!-- Washington, se o seu arquivo for .mpeg, você pode renomear para .mp3 ou mudar o src abaixo -->
+    <audio id="bg-music">
+        <source src="assets/audio/musica.mp3" type="audio/mpeg">
+        <source src="assets/audio/musica.mpeg" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
