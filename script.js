@@ -79,33 +79,41 @@ async function startShow() {
 
 async function setupPhotos() {
     photoContainer.innerHTML = '';
-    const extensions = ['jpg', 'jpeg', 'png'];
+    const extensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG', 'webp', 'HEIC', 'heic'];
+    const loadingPromises = [];
 
     for (let i = 1; i <= config.photoCount; i++) {
         const slide = document.createElement('div');
         slide.className = `photo-slide ${i === 1 ? 'active' : ''}`;
-        
-        // Tenta achar a extensão correta
-        let found = false;
-        for (const ext of extensions) {
-            const imgPath = `assets/img/${i}.${ext}`;
-            try {
+        photoContainer.appendChild(slide);
+
+        // Função interna para testar extensões em paralelo para cada foto
+        const loadPhoto = async (index, element) => {
+            let found = false;
+            for (const ext of extensions) {
+                const imgPath = `assets/img/${index}.${ext}`;
                 const exists = await checkImageExists(imgPath);
                 if (exists) {
-                    slide.style.backgroundImage = `url('${imgPath}')`;
+                    element.style.backgroundImage = `url('${imgPath}')`;
                     found = true;
+                    if (ext.toLowerCase() === 'heic') {
+                        console.error(`AVISO: A foto ${index} está em formato HEIC. Converta para JPG para funcionar na TV!`);
+                    }
                     break;
                 }
-            } catch (e) {}
-        }
+            }
+            if (!found) {
+                console.error(`ERRO: Foto ${index} não encontrada! Verifique se existe assets/img/${index}.jpg`);
+                element.style.backgroundColor = '#000';
+            }
+        };
 
-        if (!found) {
-            console.warn(`Foto ${i} não encontrada com extensões jpg, jpeg ou png`);
-            slide.style.backgroundColor = '#111'; 
-        }
-
-        photoContainer.appendChild(slide);
+        loadingPromises.push(loadPhoto(i, slide));
     }
+
+    // Aguarda todas as fotos serem validadas simultaneamente
+    await Promise.all(loadingPromises);
+    console.log("Sistema de fotos pronto para a missão!");
 }
 
 function checkImageExists(url) {
@@ -155,11 +163,11 @@ function startLyricsSync() {
                 // Ajusta o tamanho da fonte baseado no tamanho do texto
                 const length = currentLyric.text.length;
                 if (length > 80) {
-                    lyricsText.style.fontSize = '1.6rem';
+                    lyricsText.style.fontSize = '1.5rem';
                 } else if (length > 45) {
-                    lyricsText.style.fontSize = '2.2rem';
+                    lyricsText.style.fontSize = '2rem';
                 } else {
-                    lyricsText.style.fontSize = '3rem';
+                    lyricsText.style.fontSize = '2.5rem';
                 }
 
                 lyricsText.innerText = currentLyric.text;
