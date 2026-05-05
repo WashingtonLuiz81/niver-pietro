@@ -159,17 +159,20 @@ body {
     background-size: cover;
     background-position: center;
     opacity: 0;
-    transition: opacity 2s ease-in-out;
+    transform: scale(1);
+    transition: opacity 1.5s ease-in-out, transform 11s linear;
+    z-index: 1;
 }
 
 .photo-slide.active {
     opacity: 1;
-    animation: ken-burns 12s infinite alternate linear;
+    transform: scale(1.15);
+    z-index: 10; /* Sempre no topo */
 }
 
-@keyframes ken-burns {
-    0% { transform: scale(1) translate(0, 0); }
-    100% { transform: scale(1.15) translate(-2%, -2%); }
+.photo-slide.last-active {
+    opacity: 1; /* Mantém visível enquanto a nova entra por cima */
+    z-index: 5; /* Fica no meio */
 }
 
 .lyrics-overlay {

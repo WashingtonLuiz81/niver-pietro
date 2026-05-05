@@ -7,18 +7,11 @@ const lyricsText = document.querySelector('.current-lyric');
 
 // CONFIGURAÇÃO - Washington, altere aqui!
 const config = {
-    // Adicione os nomes dos arquivos de fotos que você colocar na pasta assets/img/
-    // Exemplo: ['foto1.jpg', 'foto2.jpg']
-    photos: [
-        '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', 
-        '9.jpg', '10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', 
-        '17.jpg', '18.jpg', '19.jpg', '20.jpg', '21.jpg', '22.jpg', '23.jpg', '24.jpg'
-    ],
+    photoCount: 24,
     // Intervalo de troca de fotos (em milissegundos)
     // Recomendação Antigravity: 9.5 segundos para 24 fotos (Música de 3:49)
     photoInterval: 9500,
-    // Letras da música com o tempo em segundos (estimado)
-    // Você pode ajustar o 'time' para bater com a música
+    // Letras da música com o tempo em segundos
     lyrics: [
         { time: 5, text: "Iniciando Protocolo: Surpresa do Pietro" },
         { time: 13, text: "Desde o começo um sonho guardado no olhar" },
@@ -57,12 +50,13 @@ const config = {
 };
 
 let currentPhotoIndex = 0;
+let photoIntervalId;
 
 function init() {
     startBtn.addEventListener('click', startShow);
 }
 
-function startShow() {
+async function startShow() {
     // 1. Tenta colocar em Tela Cheia (melhor para TV)
     if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
@@ -75,33 +69,70 @@ function startShow() {
     // 3. Play na música
     music.play().catch(err => console.log("Erro ao tocar música: ", err));
 
-    // 4. Inicia carrossel de fotos
-    setupPhotos();
+    // 4. Inicia carrossel de fotos (detectando extensões na hora)
+    await setupPhotos();
     startPhotoCarousel();
 
     // 5. Inicia sincronização de letras
     startLyricsSync();
 }
 
-function setupPhotos() {
-    config.photos.forEach((src, index) => {
-        const div = document.createElement('div');
-        div.className = `photo-slide ${index === 0 ? 'active' : ''}`;
-        div.style.backgroundImage = `url('assets/img/${src}')`;
-        photoContainer.appendChild(div);
-    });
+async function setupPhotos() {
+    photoContainer.innerHTML = '';
+    const extensions = ['jpg', 'jpeg', 'png'];
+
+    for (let i = 1; i <= config.photoCount; i++) {
+        const slide = document.createElement('div');
+        slide.className = `photo-slide ${i === 1 ? 'active' : ''}`;
+        
+        // Tenta achar a extensão correta
+        let found = false;
+        for (const ext of extensions) {
+            const imgPath = `assets/img/${i}.${ext}`;
+            try {
+                const exists = await checkImageExists(imgPath);
+                if (exists) {
+                    slide.style.backgroundImage = `url('${imgPath}')`;
+                    found = true;
+                    break;
+                }
+            } catch (e) {}
+        }
+
+        if (!found) {
+            console.warn(`Foto ${i} não encontrada com extensões jpg, jpeg ou png`);
+            slide.style.backgroundColor = '#111'; 
+        }
+
+        photoContainer.appendChild(slide);
+    }
 }
 
-let photoIntervalId;
+function checkImageExists(url) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+    });
+}
 
 function startPhotoCarousel() {
     const slides = document.querySelectorAll('.photo-slide');
     if (slides.length <= 1) return;
 
     photoIntervalId = setInterval(() => {
-        slides[currentPhotoIndex].classList.remove('active');
+        const prevSlide = slides[currentPhotoIndex];
+        prevSlide.classList.add('last-active');
+        prevSlide.classList.remove('active');
+
         currentPhotoIndex = (currentPhotoIndex + 1) % slides.length;
-        slides[currentPhotoIndex].classList.add('active');
+        const nextSlide = slides[currentPhotoIndex];
+        nextSlide.classList.add('active');
+
+        setTimeout(() => {
+            prevSlide.classList.remove('last-active');
+        }, 2000);
     }, config.photoInterval);
 }
 
