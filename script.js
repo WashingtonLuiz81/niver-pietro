@@ -92,18 +92,27 @@ async function setupPhotos() {
             let found = false;
             for (const ext of extensions) {
                 const imgPath = `assets/img/${index}.${ext}`;
-                const exists = await checkImageExists(imgPath);
-                if (exists) {
+                const img = await checkImageAndGetDims(imgPath);
+                if (img) {
                     element.style.backgroundImage = `url('${imgPath}')`;
+                    
+                    // INTELIGÊNCIA DE ORIENTAÇÃO
+                    // Se a altura for maior que a largura (Vertical), usa 'contain'
+                    if (img.naturalHeight > img.naturalWidth) {
+                        element.style.backgroundSize = 'contain';
+                    } else {
+                        element.style.backgroundSize = 'cover';
+                    }
+
                     found = true;
                     if (ext.toLowerCase() === 'heic') {
-                        console.error(`AVISO: A foto ${index} está em formato HEIC. Converta para JPG para funcionar na TV!`);
+                        console.error(`AVISO: A foto ${index} está em formato HEIC. Converta para JPG!`);
                     }
                     break;
                 }
             }
             if (!found) {
-                console.error(`ERRO: Foto ${index} não encontrada! Verifique se existe assets/img/${index}.jpg`);
+                console.error(`ERRO: Foto ${index} não encontrada!`);
                 element.style.backgroundColor = '#000';
             }
         };
@@ -116,11 +125,11 @@ async function setupPhotos() {
     console.log("Sistema de fotos pronto para a missão!");
 }
 
-function checkImageExists(url) {
+function checkImageAndGetDims(url) {
     return new Promise((resolve) => {
         const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
         img.src = url;
     });
 }
